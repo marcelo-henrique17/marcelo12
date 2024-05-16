@@ -1,0 +1,112 @@
+// Variáveis da bolinha
+let xBolinha = 100;
+let yBolinha = 200;
+let diametro = 22;
+let raio = diametro / 2;
+
+// Velocidade da bolinha
+let velocidadeXBolinha = 3;
+let velocidadeYBolinha = 3;
+
+// Variáveis da raquete do jogador
+let xRaqueteJogador = 5;
+let yRaqueteJogador = 150;
+let raqueteComprimento = 10;
+let raqueteAltura = 90;
+
+// Variáveis da raquete do bot
+let xRaqueteBot = 585;
+let yRaqueteBot = 150;
+
+// Pontuação do jogador e do bot
+let pontosJogador = 0;
+let pontosBot = 0;
+
+function setup() {
+  createCanvas(600, 400);
+}
+
+function draw() {
+  background(0);
+  mostraBolinha();
+  movimentaBolinha();
+  verificaColisaoBorda();
+  mostraRaqueteJogador();
+  movimentaRaqueteJogador();
+  mostraRaqueteBot();
+  movimentaRaqueteBot();
+  colisaoRaqueteJogador();
+  colisaoRaqueteBot();
+  mostraPontuacao();
+}
+
+function mostraBolinha() {
+  circle(xBolinha, yBolinha, diametro);
+}
+
+function movimentaBolinha() {
+  xBolinha += velocidadeXBolinha;
+  yBolinha += velocidadeYBolinha;
+}
+
+function verificaColisaoBorda() {
+  if (xBolinha + raio > width) {
+    pontosJogador++;
+    xBolinha = width - raio; // Ajusta a posição da bolinha para que ela fique na borda da tela
+    velocidadeXBolinha *= -1; // Inverte a direção da bolinha
+  } else if (xBolinha - raio < 0) {
+    pontosBot++;
+    xBolinha = raio; // Ajusta a posição da bolinha para que ela fique na borda da tela
+    velocidadeXBolinha *= -1; // Inverte a direção da bolinha
+  }
+  if (yBolinha + raio > height || yBolinha - raio < 0) {
+    velocidadeYBolinha *= -1;
+  }
+}
+
+function mostraRaqueteJogador() {
+  rect(xRaqueteJogador, yRaqueteJogador, raqueteComprimento, raqueteAltura);
+}
+
+function movimentaRaqueteJogador() {
+  if (keyIsDown(UP_ARROW) && yRaqueteJogador > 0) {
+    yRaqueteJogador -= 10;
+  }
+  if (keyIsDown(DOWN_ARROW) && yRaqueteJogador < height - raqueteAltura) {
+    yRaqueteJogador += 10;
+  }
+}
+
+function mostraRaqueteBot() {
+  rect(xRaqueteBot, yRaqueteBot, raqueteComprimento, raqueteAltura);
+}
+
+function movimentaRaqueteBot() {
+  // Simples movimento do bot seguindo a bolinha verticalmente
+  if (yBolinha > yRaqueteBot + raqueteAltura / 2) {
+    yRaqueteBot += 3;
+  } else {
+    yRaqueteBot -= 3;
+  }
+}
+
+function colisaoRaqueteJogador() {
+  if (xBolinha - raio < xRaqueteJogador + raqueteComprimento &&
+      yBolinha + raio > yRaqueteJogador && yBolinha - raio < yRaqueteJogador + raqueteAltura) {
+    velocidadeXBolinha *= -1;
+  }
+}
+
+function colisaoRaqueteBot() {
+  if (xBolinha + raio > xRaqueteBot &&
+      yBolinha + raio > yRaqueteBot && yBolinha - raio < yRaqueteBot + raqueteAltura) {
+    velocidadeXBolinha *= -1;
+  }
+}
+
+function mostraPontuacao() {
+  textSize(20);
+  fill(255);
+  text("Jogador: " + pontosJogador, 20, 30);
+  text("Bot: " + pontosBot, width - 100, 30);
+}
